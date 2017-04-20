@@ -104,6 +104,32 @@ function generateTreeById($items)
     return $tree;
 }
 
+/**
+ * 遍历树状结构数据
+ * @param int $deep
+ * @param array $results
+ * @return array
+ */
+function scanTreeData($tree, $deep = 0, &$results = []){
+    // + 保留数组索引值
+    if (!empty($tree)) {
+        $deep++;
+        foreach ($tree as $key => $value) {
+            $temp = $value;
+            if (isset($temp['children'])) {
+                unset($temp['children']);
+            }
+            $results[] = $temp;
+            if ($deep < 10) {
+                if (isset($value['children']) && !empty($value['children'])) {
+                    scanTreeData($value['children'], $deep, $results);
+                }
+            }
+        }
+    }
+    return $results;
+}
+
 $items = getTreeLists();
 
 // 如果$items索引值被重组了就要重新组装索引值
@@ -112,5 +138,9 @@ $items = getTreeLists();
 $treeDefault = generateTreeDefault($items);
 
 $treeById = generateTreeById($items);
+
+$scanTreeLists = scanTreeData($treeById);
+
+var_dump($scanTreeLists);
 
 exit();
